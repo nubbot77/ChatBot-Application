@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chat-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .chat-header .status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: slideIn 0.3s ease-out;
+            word-wrap: break-word;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #f1f5f9;
+            color: #334155;
+            align-self: flex-start;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            min-height: 48px;
+            max-height: 120px;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-button {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .clear-button {
+            padding: 8px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .clear-button:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #64748b;
+            padding: 40px 20px;
+            font-size: 1.1rem;
+        }
+
+        .welcome-message h2 {
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 95%;
+                height: 95vh;
+                border-radius: 15px;
+            }
+
+            .chat-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .chat-input {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>AI Chatbot</h1>
+            <div class="status">
+                <span class="status-indicator"></span>
+                Online
+            </div>
+        </div>
+        
+        <div class="chat-messages">
+            {% if chat_history %}
+                {% for message in chat_history %}
+                    <div class="message {% if message.type == 'user' %}user-message{% else %}bot-message{% endif %}">
+                        {{ message.message }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="welcome-message">
+                    <h2>Welcome! 👋</h2>
+                    <p>I'm here to help you. Ask me anything!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="chat-input-container">
+            <form method="POST" action="/clear" style="margin-bottom: 10px;">
+                <button type="submit" class="clear-button">Clear Chat</button>
+            </form>
+            <form method="POST" action="/chat" class="input-wrapper">
+                <textarea 
+                    class="chat-input" 
+                    name="user_input"
+                    placeholder="Type your message here..."
+                    rows="1"
+                    required
+                ></textarea>
+                <button type="submit" class="send-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-scroll to bottom when page loads
+        window.addEventListener('load', function() {
+            const chatMessages = document.querySelector('.chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+        
+        // Auto-resize textarea
+        const textarea = document.querySelector('.chat-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+        
+        // Submit form on Enter key (but not Shift+Enter)
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.closest('form').submit();
+            }
+        });
+    </script>
+</body>
+</html>

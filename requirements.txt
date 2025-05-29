@@ -1,0 +1,9 @@
+langchain
+langchain-community
+numpy
+pandas
+langchain-groq
+python-dotenv
+langchain-core
+flask
+-e .
