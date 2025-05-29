@@ -30,7 +30,7 @@ The application features a modern chat interface with:
 
 - **Backend**: Flask (Python web framework)
 - **AI/ML**: LangChain + Groq API (Gemma2-9B model)
-- **Frontend**: HTML5, CSS3, JavaScript
+- **Frontend**: HTML5, CSS3, Javascript
 - **Styling**: Custom CSS with modern gradients and animations
 - **Environment**: Python-dotenv for configuration management
 
